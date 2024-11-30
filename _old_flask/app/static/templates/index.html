@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ZIP Code to Map</title>
+        <!-- <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin: 20px 0;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .map-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            border: 1px solid #ddd;
+            display: none;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style> -->
+    </head>
+    <body>
+        <h1>ZIP Code to Map</h1>
+        <form id="zipForm">
+            <input type="text" id="zipCode" placeholder="Enter ZIP Code"
+                required>
+            <button type="submit">Get Map</button>
+            <button type="button" id="resetBtn">Reset</button>
+        </form>
+        <div class="error" id="errorMessage"></div>
+        <div class="map-container" id="mapContainer">
+            <iframe id="mapFrame" src></iframe>
+        </div>
+
+        <script>
+        const zipForm = document.getElementById('zipForm');
+        const zipCodeInput = document.getElementById('zipCode');
+        const errorMessage = document.getElementById('errorMessage');
+        const mapContainer = document.getElementById('mapContainer');
+        const mapFrame = document.getElementById('mapFrame');
+        const resetBtn = document.getElementById('resetBtn');
+
+        zipForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const zipCode = zipCodeInput.value.trim();
+
+            if (!zipCode) {
+                errorMessage.textContent = "Please enter a ZIP Code.";
+                return;
+            }
+
+            try {
+                const response = await fetch('/get-map', {
+                    method: 'POST',
+                    headers: {
+                                'Content-Type': 'application/json',
+                                'User-Agent': 'cs361-microservice-map/1.0 (your-email@example.com)',
+                                'Referer': 'http://localhost:5002/'
+                    },
+                    body: JSON.stringify({ zip_code: zipCode })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    errorMessage.textContent = '';
+                    mapFrame.src = data.map_url;
+                    mapContainer.style.display = 'block';
+                } else {
+                    mapContainer.style.display = 'none';
+                    errorMessage.textContent = data.error || 'An error occurred while fetching the map.';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Failed to connect to the server.';
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            zipCodeInput.value = '';
+            mapContainer.style.display = 'none';
+            errorMessage.textContent = '';
+        });
+    </script>
+    </body>
+</html>
