@@ -39,6 +39,9 @@ app.get('/', (req, res) => {
 app.get('/fetch-map', async (req, res) => {
     const zipCode = req.query.zipCode; // Get the zip code from the query string
     
+    // Log the received zip code
+    console.log("Received zip code for map fetch:", zipCode);
+
     if (!zipCode) {
         return res.status(400).send('Zip code is required');
     }
@@ -67,6 +70,9 @@ app.get('/fetch-map', async (req, res) => {
 // Endpoint to send back the map image for display
 app.get('/map-image', async (req, res) => {
     const zipCode = req.query.zipCode;
+
+    // Log the received zip code
+    console.log("Received zip code for map image:", zipCode);
 
     if (!zipCode) {
         return res.status(400).send('Zip code is required');
